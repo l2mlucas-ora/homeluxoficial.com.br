@@ -96,6 +96,8 @@ nav.principal a[aria-current="page"] { color: var(--navy); font-weight: 700; bor
 .menu-btn svg { width: 22px; height: 22px; display: block; }
 @media (max-width: 900px) {
   .topo-in { gap: 12px; }
+  .topo-in .pedido-link { order: 2; margin-left: auto; }
+  .topo-in .menu-btn { order: 3; }
   .menu-btn { display: inline-flex; }
   .topo .btn { display: none; }
   nav.principal { display: none; position: absolute; left: 0; right: 0; top: 100%; background: var(--branco); border-bottom: 1px solid var(--linha); flex-direction: column; align-items: stretch; gap: 0; padding: 8px 0; box-shadow: var(--shadow-md); }
@@ -300,6 +302,32 @@ table.specs td:first-child { color: var(--cinza); width: 38%; }
 .wa-flutuante { display: none; position: fixed; right: 16px; bottom: 16px; z-index: 30; background: var(--whatsapp); color: #fff; width: 56px; height: 56px; border-radius: 50%; align-items: center; justify-content: center; box-shadow: var(--shadow-md); }
 .wa-flutuante svg { width: 30px; height: 30px; }
 @media (max-width: 900px) { .wa-flutuante { display: flex; } }
+
+
+/* ---------- pedido (carrinho sem backend) ---------- */
+
+.pedido-link { position: relative; display: inline-flex; align-items: center; color: var(--navy); padding: 6px; border-radius: var(--radius-sm); }
+.pedido-link svg { width: 24px; height: 24px; }
+.pedido-badge { position: absolute; top: -2px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--sol); color: var(--grafite); font-size: .7rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.link-seta .pedido-badge { position: static; margin: 0 2px; }
+.qtd-ctl { display: inline-flex; align-items: center; border: 1.5px solid var(--linha); border-radius: var(--radius-sm); overflow: hidden; }
+.qtd-ctl button { width: 30px; height: 32px; border: 0; background: var(--papel); color: var(--navy); font-size: 1.1rem; cursor: pointer; }
+.qtd-ctl button:hover { background: var(--sol-claro); }
+.qtd-ctl input { width: 56px; height: 32px; border: 0; text-align: center; font: 700 .95rem var(--fonte-corpo); color: var(--grafite); -moz-appearance: textfield; }
+.qtd-ctl input::-webkit-outer-spin-button, .qtd-ctl input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+table.var td.qtd { white-space: nowrap; width: 1%; }
+.form-pedido-acoes { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.pedido-aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--navy); color: #fff; padding: 12px 18px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-size: .95rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 40; max-width: calc(100% - 32px); }
+.pedido-aviso.visivel { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.pedido-aviso a { color: var(--sol); font-weight: 700; text-decoration: none; margin-left: 6px; }
+.pedido { display: grid; gap: 20px; padding-bottom: 20px; }
+.pedido-tabela td.qtd input { width: 70px; padding: 6px 8px; border: 1.5px solid var(--linha); border-radius: var(--radius-sm); font: 700 .95rem var(--fonte-corpo); text-align: center; }
+.pedido-tabela .remover { width: 30px; height: 30px; border: 1.5px solid var(--linha); background: var(--branco); border-radius: 50%; color: var(--cinza); cursor: pointer; font-size: 1.1rem; line-height: 1; }
+.pedido-tabela .remover:hover { color: var(--vermelho); border-color: var(--vermelho); }
+.link-limpar { background: none; border: 0; color: var(--cinza); font: 500 .95rem var(--fonte-corpo); cursor: pointer; text-decoration: underline; }
+.form-lojista textarea { font: 500 1rem var(--fonte-corpo); padding: 10px 12px; border: 1.5px solid var(--linha); border-radius: var(--radius-sm); background: var(--branco); color: var(--grafite); resize: vertical; }
+.sr { position: absolute; left: -9999px; }
+@media (max-width: 900px) { .pedido-link { margin-left: auto; } }
 
 /* ---------- rodapé ---------- */
 
