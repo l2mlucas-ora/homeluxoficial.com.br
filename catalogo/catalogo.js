@@ -8,7 +8,7 @@
   var contagem = document.getElementById('contagem');
   if (!grade) return;
 
-  var estado = { cat: 'todas', q: '' };
+  var estado = { cat: 'todas', q: '', sub: '' };
   var dados = null;
 
   function norm(s) {
@@ -18,11 +18,13 @@
     var p = new URLSearchParams(location.search);
     estado.cat = p.get('cat') || 'todas';
     estado.q = p.get('q') || '';
+    estado.sub = p.get('sub') || '';
   }
   function gravarUrl() {
     var p = new URLSearchParams();
     if (estado.cat !== 'todas') p.set('cat', estado.cat);
     if (estado.q) p.set('q', estado.q);
+    if (estado.sub) p.set('sub', estado.sub);
     var qs = p.toString();
     history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
   }
@@ -37,6 +39,10 @@
   function nomeCat(id) {
     for (var i = 0; i < dados.categorias.length; i++) if (dados.categorias[i].id === id) return dados.categorias[i].nome;
     return id;
+  }
+  function nomeSub(cat, sub) {
+    for (var i = 0; i < dados.categorias.length; i++) if (dados.categorias[i].id === cat) return (dados.categorias[i].subcategorias || {})[sub] || sub;
+    return sub;
   }
   function cardProduto(p) {
     var foto = p.fotos && p.fotos[0];
@@ -56,6 +62,7 @@
     return dados.produtos.filter(function (p) {
       if (!p.ativo) return false;
       if (estado.cat !== 'todas' && p.categoria !== estado.cat) return false;
+      if (estado.sub && p.subcategoria !== estado.sub) return false;
       if (q && p.busca.indexOf(q) === -1) return false;
       return true;
     });
@@ -71,7 +78,7 @@
       grade.appendChild(frag);
     }
     contagem.textContent = lista.length + (lista.length === 1 ? ' produto' : ' produtos') +
-      (estado.cat !== 'todas' ? ' em ' + nomeCat(estado.cat) : '') + (estado.q ? ' para "' + estado.q + '"' : '');
+      (estado.cat !== 'todas' ? ' em ' + nomeCat(estado.cat) : '') + (estado.sub ? ' › ' + nomeSub(estado.cat, estado.sub) : '') + (estado.q ? ' para "' + estado.q + '"' : '');
     var bs = chips.querySelectorAll('.chip');
     for (var i = 0; i < bs.length; i++) bs[i].setAttribute('aria-pressed', bs[i].getAttribute('data-cat') === estado.cat ? 'true' : 'false');
     gravarUrl();
@@ -81,7 +88,7 @@
     var todas = [{ id: 'todas', nome: 'Todas' }].concat(dados.categorias);
     todas.forEach(function (c) {
       var b = el('button', { 'class': 'chip', type: 'button', 'data-cat': c.id, 'aria-pressed': 'false', text: c.nome });
-      b.addEventListener('click', function () { estado.cat = c.id; render(); });
+      b.addEventListener('click', function () { estado.cat = c.id; estado.sub = ''; render(); });
       chips.appendChild(b);
     });
   }

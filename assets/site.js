@@ -37,8 +37,65 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('aberto')) btn.click(); });
   }
 
+  // Mega-menu Produtos: clique abre/fecha no mobile e no teclado (hover já abre no desktop via CSS)
+  var temSub = document.querySelector('.tem-sub');
+  if (temSub) {
+    var gat = temSub.querySelector('a[aria-haspopup]');
+    gat.addEventListener('click', function (e) {
+      var mobile = window.matchMedia('(max-width: 900px)').matches;
+      if (mobile || e.detail === 0) {   // toque no mobile ou Enter/Espaço via teclado: alterna em vez de navegar
+        e.preventDefault();
+        var ab = temSub.classList.toggle('aberto');
+        gat.setAttribute('aria-expanded', ab ? 'true' : 'false');
+      }
+    });
+    document.addEventListener('click', function (e) { if (!temSub.contains(e.target)) { temSub.classList.remove('aberto'); gat.setAttribute('aria-expanded', 'false'); } });
+  }
+
+  // Cadastro rápido de lojista: vira mensagem de WhatsApp (sem backend, sem armazenar dado)
+  var fl = document.querySelector('.form-lojista');
+  if (fl) {
+    fl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var d = new FormData(fl);
+      var txt = 'Olá! Sou lojista/distribuidor e quero cadastro na Homelux.\nEmpresa: ' + (d.get('empresa') || '') + '\nCNPJ: ' + (d.get('cnpj') || '') +
+        '\nCidade/UF: ' + (d.get('cidade') || '') + '\nResponsável: ' + (d.get('nome') || '') + '\nRamo: ' + (d.get('ramo') || '') + '\nInteresse: ' + (d.get('interesse') || '');
+      window.open(linkWa(txt), '_blank', 'noopener');
+    });
+  }
+
   // ?dev=1 mostra selos internos (foto provisória)
   if (/[?&]dev=1/.test(location.search)) body.classList.add('dev');
+
+
+  // Fachada (carrossel de linhas): auto 7 s, pausa no hover/foco, setas, pontos, respeita reduced-motion
+  var fachada = document.querySelector('.fachada');
+  if (fachada) {
+    var slides = fachada.querySelectorAll('.slide'), pontos = fachada.querySelector('.pontos'), atual = 0, timer, parado = false;
+    var reduzido = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function ir(n) {
+      atual = (n + slides.length) % slides.length;
+      for (var i = 0; i < slides.length; i++) {
+        slides[i].classList.toggle('ativo', i === atual);
+        slides[i].setAttribute('aria-hidden', i === atual ? 'false' : 'true');
+      }
+      var bs = pontos.querySelectorAll('button');
+      for (var k = 0; k < bs.length; k++) bs[k].setAttribute('aria-selected', k === atual ? 'true' : 'false');
+    }
+    function agendar() { clearTimeout(timer); if (!reduzido && !parado) timer = setTimeout(function () { ir(atual + 1); agendar(); }, 7000); }
+    for (var s = 0; s < slides.length; s++) (function (idx) {
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab');
+      b.setAttribute('aria-label', 'Linha ' + (idx + 1)); b.addEventListener('click', function () { ir(idx); agendar(); });
+      pontos.appendChild(b);
+    })(s);
+    fachada.querySelector('.seta.ant').addEventListener('click', function () { ir(atual - 1); agendar(); });
+    fachada.querySelector('.seta.prox').addEventListener('click', function () { ir(atual + 1); agendar(); });
+    fachada.addEventListener('mouseenter', function () { parado = true; clearTimeout(timer); });
+    fachada.addEventListener('mouseleave', function () { parado = false; agendar(); });
+    fachada.addEventListener('focusin', function () { parado = true; clearTimeout(timer); });
+    fachada.addEventListener('focusout', function () { parado = false; agendar(); });
+    ir(0); agendar();
+  }
 
   // Galeria da página de produto
   var principal = document.querySelector('.galeria .principal img');
