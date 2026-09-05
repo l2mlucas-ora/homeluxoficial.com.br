@@ -284,6 +284,9 @@ table.specs td:first-child { color: var(--cinza); width: 38%; }
 .relacionados { padding: 48px 0 64px; border-top: 1px solid var(--linha); }
 @media (max-width: 900px) { .produto { grid-template-columns: 1fr; gap: 24px; } .galeria { position: static; } }
 
+.desenho { background: var(--branco); border: 1px solid var(--linha); border-radius: var(--radius-md); padding: 16px; margin: 0; }
+.desenho img { width: 100%; }
+
 /* ---------- páginas de conteúdo ---------- */
 
 .pagina-topo { padding: 48px 0 28px; }
