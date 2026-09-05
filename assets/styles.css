@@ -85,9 +85,9 @@ code, .cod { font-variant-numeric: tabular-nums; }
 /* ---------- header ---------- */
 
 header.topo { background: var(--branco); border-bottom: 1px solid var(--linha); position: sticky; top: 0; z-index: 20; }
-.topo-in { display: flex; align-items: center; gap: 22px; padding: 12px 0; }
+.topo-in { display: flex; align-items: center; gap: 22px; padding: 8px 0; }
 .logo-nav { display: flex; align-items: center; text-decoration: none; margin-right: auto; }
-.logo-nav img { height: 44px; width: auto; }
+.logo-nav img { height: 60px; width: auto; }
 nav.principal { display: flex; align-items: center; gap: 20px; }
 nav.principal a { text-decoration: none; font-weight: 500; font-size: .95rem; color: var(--grafite); white-space: nowrap; }
 nav.principal a:hover { color: var(--navy); }
@@ -340,7 +340,7 @@ footer.rodape { background: var(--navy-escuro); color: #c9cfe0; padding: 48px 0 
 .rodape a { color: #c9cfe0; text-decoration: none; }
 .rodape a:hover { color: var(--sol); }
 .rodape ul { list-style: none; padding: 0; display: grid; gap: 8px; font-size: .95rem; }
-.rodape .marca img { height: 40px; width: auto; margin-bottom: 14px; }
+.rodape .marca img { height: 56px; width: auto; margin-bottom: 14px; }
 .rodape .marca p { font-size: .92rem; max-width: 34ch; }
 .rodape .legal { border-top: 1px solid rgb(255 255 255 / .12); margin-top: 32px; padding-top: 18px; font-size: .82rem; color: #8f98b3; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 @media (max-width: 900px) { .rodape-in { grid-template-columns: 1fr 1fr; } }
