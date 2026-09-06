@@ -88,18 +88,25 @@
       e.preventDefault();
       var itens = ler(); if (!itens.length) return;
       var d = new FormData(form);
-      var linhas = itens.map(function (it, i) { return (i + 1) + ') ' + it.codigo + ' — ' + it.familia + (it.nome && it.nome !== it.familia ? ' (' + it.nome + ')' : '') + ' — ' + it.qtd + ' un'; });
-      var txt = 'PEDIDO PELO SITE — Homelux\n' +
-        'Cliente: ' + (d.get('nome') || '') + '\n' +
-        'Empresa: ' + (d.get('empresa') || '-') + '\n' +
-        'CNPJ/CPF: ' + (d.get('documento') || '-') + '\n' +
-        'Tipo: ' + (d.get('tipo') || '') + '\n' +
-        'Cidade/UF: ' + (d.get('cidade') || '') + '\n' +
-        'Telefone: ' + (d.get('telefone') || '') + '\n' +
-        (d.get('email') ? 'E-mail: ' + d.get('email') + '\n' : '') +
-        '\nITENS (' + itens.length + ' códigos, ' + total(itens) + ' un):\n' + linhas.join('\n') + '\n' +
-        (d.get('obs') ? '\nObservações: ' + d.get('obs') + '\n' : '') +
-        '\nAguardo orçamento com prazo e condições. Obrigado!';
+      // Mensagem em blocos (WhatsApp aceita *negrito* e quebras de linha); campos vazios ficam de fora.
+      function campo(rotulo, valor) { valor = (valor || '').toString().trim(); return valor ? rotulo + ': ' + valor + '\n' : ''; }
+      var agora = new Date(); var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var ref = agora.getFullYear() + pad(agora.getMonth() + 1) + pad(agora.getDate()) + '-' + pad(agora.getHours()) + pad(agora.getMinutes());
+      var linhas = itens.map(function (it, i) {
+        var det = [];
+        if (it.nome && it.nome !== it.familia) det.push(it.nome);
+        det.push(it.qtd + ' un');
+        if (it.embalagem) det.push('emb. ' + it.embalagem);
+        return (i + 1) + '. *' + it.codigo + '* — ' + it.familia + '\n    ' + det.join(' · ');
+      });
+      var txt = '*PEDIDO PELO SITE — HOMELUX*\n' +
+        'Ref. ' + ref + ' · ' + pad(agora.getDate()) + '/' + pad(agora.getMonth() + 1) + '/' + agora.getFullYear() + ' ' + pad(agora.getHours()) + ':' + pad(agora.getMinutes()) + '\n' +
+        '\n*DADOS DO CLIENTE*\n' +
+        campo('Nome', d.get('nome')) + campo('Empresa', d.get('empresa')) + campo('CNPJ/CPF', d.get('documento')) + campo('Tipo', d.get('tipo')) +
+        campo('Cidade/UF', d.get('cidade')) + campo('Telefone', d.get('telefone')) + campo('E-mail', d.get('email')) +
+        '\n*ITENS DO PEDIDO* (' + itens.length + (itens.length === 1 ? ' código' : ' códigos') + ' · ' + total(itens) + ' unidades)\n' + linhas.join('\n') + '\n' +
+        (d.get('obs') ? '\n*OBSERVAÇÕES*\n' + d.get('obs').trim() + '\n' : '') +
+        '\nAguardo orçamento com prazo e condições de pagamento. Obrigado!';
       window.open('https://wa.me/' + numero + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
       var ok = document.getElementById('pedido-enviado'); if (ok) ok.hidden = false;
     });

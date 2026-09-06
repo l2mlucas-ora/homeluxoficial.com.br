@@ -58,8 +58,11 @@
     fl.addEventListener('submit', function (e) {
       e.preventDefault();
       var d = new FormData(fl);
-      var txt = 'Olá! Sou lojista/distribuidor e quero cadastro na Homelux.\nEmpresa: ' + (d.get('empresa') || '') + '\nCNPJ: ' + (d.get('cnpj') || '') +
-        '\nCidade/UF: ' + (d.get('cidade') || '') + '\nResponsável: ' + (d.get('nome') || '') + '\nRamo: ' + (d.get('ramo') || '') + '\nInteresse: ' + (d.get('interesse') || '');
+      function campo(rotulo, valor) { valor = (valor || '').toString().trim(); return valor ? rotulo + ': ' + valor + '\n' : ''; }
+      var txt = '*CADASTRO DE LOJISTA — HOMELUX*\n\n' +
+        campo('Empresa', d.get('empresa')) + campo('CNPJ', d.get('cnpj')) + campo('Cidade/UF', d.get('cidade')) + campo('Responsável', d.get('nome')) +
+        campo('Ramo', d.get('ramo')) + campo('Interesse', d.get('interesse')) +
+        '\nQuero abrir cadastro para comprar direto da fábrica. Aguardo retorno do comercial. Obrigado!';
       window.open(linkWa(txt), '_blank', 'noopener');
     });
   }
