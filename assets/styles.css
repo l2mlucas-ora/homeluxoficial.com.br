@@ -279,6 +279,7 @@ table.var td, table.specs td { padding: 10px 14px; border-bottom: 1px solid var(
 table.var tr:last-child td, table.specs tr:last-child td { border-bottom: 0; }
 table.var td.cod { font-weight: 700; color: var(--navy); white-space: nowrap; }
 table.specs td:first-child { color: var(--cinza); width: 38%; }
+.selo-industria { height: 44px; width: auto; display: block; }
 .pill { display: inline-block; background: var(--papel); border: 1px solid var(--linha); border-radius: 999px; padding: 4px 12px; font-size: .85rem; margin: 0 6px 6px 0; }
 .aviso { font-size: .88rem; color: var(--cinza); border-left: 3px solid var(--sol); padding-left: 12px; margin-top: 18px; }
 .relacionados { padding: 48px 0 64px; border-top: 1px solid var(--linha); }
