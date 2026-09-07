@@ -1,0 +1,65 @@
+# Publica o catálogo a partir do CRM (crm.homeluxoficial.com.br → menu Produtos → "Publicar no site").
+# Disparo: repository_dispatch "publicar-catalogo" (botão do CRM) ou manual (workflow_dispatch).
+# Segredos do repositório: CATALOGO_TOKEN (mesmo do Worker do CRM). Variável opcional: CRM_URL.
+name: Publicar catálogo (CRM → site)
+on:
+  repository_dispatch:
+    types: [publicar-catalogo]
+  workflow_dispatch:
+concurrency:
+  group: publicar-catalogo
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet pillow
+      - name: Gerar site e PDFs a partir do CRM
+        env:
+          CRM_URL: ${{ vars.CRM_URL || 'https://crm.homeluxoficial.com.br' }}
+          CATALOGO_TOKEN: ${{ secrets.CATALOGO_TOKEN }}
+          PUBLICACAO_ID: ${{ github.event.client_payload.publicacao_id }}
+          CHROME: google-chrome
+        run: python _gerador/publicar.py --sem-avisar
+      - name: Publicar no GitHub Pages (commit)
+        id: commit
+        run: |
+          git config user.name "Homelux CRM"
+          git config user.email "crm@homeluxoficial.com.br"
+          git add -A -- . ':!_gerador/_trabalho'
+          if git diff --cached --quiet; then echo "sem mudanças no site"; echo "mudou=0" >> "$GITHUB_OUTPUT"; else git commit -q -m "Catálogo publicado pelo CRM ($(date -u +%Y-%m-%d\ %H:%M) UTC)" && git push && echo "mudou=1" >> "$GITHUB_OUTPUT"; fi
+      - name: Avisar o CRM (status + PDFs)
+        if: always()
+        env:
+          CRM_URL: ${{ vars.CRM_URL || 'https://crm.homeluxoficial.com.br' }}
+          CATALOGO_TOKEN: ${{ secrets.CATALOGO_TOKEN }}
+          PUBLICACAO_ID: ${{ github.event.client_payload.publicacao_id }}
+          RESULTADO: ${{ job.status }}
+          MUDOU: ${{ steps.commit.outputs.mudou }}
+        run: |
+          python - <<'PY'
+          import os, io, json, uuid, urllib.request
+          crm = os.environ["CRM_URL"].rstrip("/"); tok = os.environ["CATALOGO_TOKEN"]
+          ok = os.environ.get("RESULTADO") == "success"
+          cat = "_gerador/_trabalho/catalogo/pdf"
+          pdfs = {"pdf_catalogo": f"{cat}/catalogo-homelux.pdf", "pdf_tecnico": f"{cat}/catalogo-tecnico-homelux.pdf"}
+          detalhe = {"ambiente": "github-action", "runner": os.environ.get("GITHUB_RUN_ID", ""), "site_alterado": os.environ.get("MUDOU") == "1", "url_run": f"{os.environ.get('GITHUB_SERVER_URL')}/{os.environ.get('GITHUB_REPOSITORY')}/actions/runs/{os.environ.get('GITHUB_RUN_ID')}"}
+          if not ok: detalhe["erro"] = "falha no GitHub Action — veja url_run"
+          lim = uuid.uuid4().hex; b = io.BytesIO()
+          def campo(n, v): b.write(f"--{lim}\r\nContent-Disposition: form-data; name=\"{n}\"\r\n\r\n{v}\r\n".encode())
+          campo("publicacao_id", os.environ.get("PUBLICACAO_ID", "")); campo("status", "concluida" if ok else "erro"); campo("detalhe", json.dumps(detalhe))
+          if ok:
+            for n, p in pdfs.items():
+              if os.path.exists(p):
+                b.write(f"--{lim}\r\nContent-Disposition: form-data; name=\"{n}\"; filename=\"{os.path.basename(p)}\"\r\nContent-Type: application/pdf\r\n\r\n".encode()); b.write(open(p, "rb").read()); b.write(b"\r\n")
+          b.write(f"--{lim}--\r\n".encode())
+          req = urllib.request.Request(f"{crm}/api/catalogo/publicado", data=b.getvalue(), method="POST", headers={"Authorization": f"Bearer {tok}", "Content-Type": f"multipart/form-data; boundary={lim}"})
+          print(urllib.request.urlopen(req, timeout=300).read().decode()[:300])
+          PY

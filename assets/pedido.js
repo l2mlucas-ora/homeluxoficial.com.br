@@ -84,9 +84,43 @@
     }
     render();
     document.getElementById('pedido-limpar').addEventListener('click', function () { if (confirm('Limpar todos os itens do pedido?')) { gravar([]); render(); } });
+
+  // Validação dos dados do cliente: tudo obrigatório; CPF/CNPJ com dígito verificador (o CRM confere de novo no servidor).
+  function soDig(s) { return (s || '').replace(/\D/g, ''); }
+  function cpfValido(d) {
+    if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false;
+    for (var t = 9; t < 11; t++) { var soma = 0; for (var i = 0; i < t; i++) soma += parseInt(d.charAt(i), 10) * (t + 1 - i); var dv = (soma * 10) % 11; if (dv === 10) dv = 0; if (dv !== parseInt(d.charAt(t), 10)) return false; }
+    return true;
+  }
+  function cnpjValido(d) {
+    if (d.length !== 14 || /^(\d)\1+$/.test(d)) return false;
+    var calc = function (base, pesos) { var soma = 0; for (var i = 0; i < base.length; i++) soma += parseInt(base.charAt(i), 10) * pesos[i]; var r = soma % 11; return r < 2 ? 0 : 11 - r; };
+    var p1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2], p2 = [6].concat(p1);
+    return calc(d.slice(0, 12), p1) === parseInt(d.charAt(12), 10) && calc(d.slice(0, 13), p2) === parseInt(d.charAt(13), 10);
+  }
+  function validarCliente(form) {
+    var d = new FormData(form); var erros = []; var campos = {};
+    var marcar = function (n, msg) { erros.push(msg); campos[n] = true; };
+    var nome = (d.get('nome') || '').trim(); if (nome.split(/\s+/).length < 2) marcar('nome', 'Informe o nome completo.');
+    var tel = soDig(d.get('telefone')); if (tel.length < 10 || tel.length > 11 || /^(\d)\1+$/.test(tel)) marcar('telefone', 'Telefone inválido: use DDD + número (10 ou 11 dígitos).');
+    var doc = soDig(d.get('documento')); if (!(doc.length === 11 ? cpfValido(doc) : doc.length === 14 ? cnpjValido(doc) : false)) marcar('documento', 'CPF ou CNPJ inválido — confira os dígitos.');
+    var tipo = (d.get('tipo') || '').trim(); if (!tipo) marcar('tipo', 'Diga se você é lojista, instalador ou consumidor.');
+    if (/lojista|distrib/i.test(tipo) && (d.get('empresa') || '').trim().length < 3) marcar('empresa', 'Lojista/distribuidor: informe o nome da empresa.');
+    if (/lojista|distrib/i.test(tipo) && doc.length !== 14) marcar('documento', 'Lojista/distribuidor: informe o CNPJ.');
+    var cid = (d.get('cidade') || '').trim(); if (cid.length < 4) marcar('cidade', 'Informe cidade e UF (ex.: Blumenau / SC).');
+    var email = (d.get('email') || '').trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) marcar('email', 'E-mail inválido.');
+    var els = form.querySelectorAll('input,select'); for (var i = 0; i < els.length; i++) els[i].classList.toggle('invalido', !!campos[els[i].name]);
+    var caixa = document.getElementById('pedido-erros');
+    if (!caixa) { caixa = document.createElement('div'); caixa.id = 'pedido-erros'; caixa.className = 'form-erros'; caixa.setAttribute('role', 'alert'); form.insertBefore(caixa, form.querySelector('.form-acoes') || form.lastElementChild); }
+    caixa.innerHTML = erros.length ? '<b>Confira os dados antes de enviar:</b><ul>' + erros.map(function (e) { return '<li>' + e + '</li>'; }).join('') + '</ul>' : '';
+    caixa.style.display = erros.length ? '' : 'none';
+    if (erros.length) { var primeiro = form.querySelector('.invalido'); if (primeiro) primeiro.focus(); }
+    return erros.length === 0;
+  }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var itens = ler(); if (!itens.length) return;
+      var itens = ler(); if (!itens.length) { avisar('Adicione ao menos um item ao pedido.'); return; }
+      if (!validarCliente(form)) return;
       var d = new FormData(form);
       // Mensagem em blocos (WhatsApp aceita *negrito* e quebras de linha); campos vazios ficam de fora.
       function campo(rotulo, valor) { valor = (valor || '').toString().trim(); return valor ? rotulo + ': ' + valor + '\n' : ''; }

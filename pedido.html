@@ -24,6 +24,8 @@
 <div class="abertura" id="abertura" role="presentation"><img src="assets/logo-homelux-animada.svg" alt="Homelux" width="360" height="290"></div>
 <script>try{if(sessionStorage.getItem('homelux.abertura')==='1')document.documentElement.classList.add('sem-abertura');else sessionStorage.setItem('homelux.abertura','1');}catch(e){}</script>
 <div class="abertura" id="abertura" role="presentation"><img src="assets/logo-homelux-animada.svg" alt="Homelux" width="360" height="290"></div>
+<script>try{if(sessionStorage.getItem('homelux.abertura')==='1')document.documentElement.classList.add('sem-abertura');else sessionStorage.setItem('homelux.abertura','1');}catch(e){}</script>
+<div class="abertura" id="abertura" role="presentation"><img src="assets/logo-homelux-animada.svg" alt="Homelux" width="360" height="290"></div>
 <!-- @topo (gerado por ferramentas/gerar-catalogo.py a partir de templates/topo.html — não editar à mão) -->
 <a class="skip" href="#conteudo">Ir para o conteúdo</a>
 <header class="topo">
@@ -76,13 +78,13 @@
       <section class="card">
         <h2 style="font-size:1.25rem;margin-bottom:12px">Seus dados</h2>
         <div class="form-lojista" style="display:grid">
-          <label>Nome <input name="nome" required autocomplete="name"></label>
-          <label>Telefone / WhatsApp <input name="telefone" required inputmode="tel" autocomplete="tel"></label>
-          <label>Empresa (se for lojista) <input name="empresa" autocomplete="organization"></label>
-          <label>CNPJ ou CPF <input name="documento" inputmode="numeric"></label>
-          <label>Cidade / UF <input name="cidade" required placeholder="Blumenau / SC"></label>
-          <label>E-mail <input name="email" type="email" autocomplete="email"></label>
-          <label>Você é <select name="tipo"><option>Lojista / distribuidor</option><option>Eletricista / instalador</option><option>Consumidor</option></select></label>
+          <label>Nome completo <input name="nome" required minlength="5" autocomplete="name"></label>
+          <label>Telefone / WhatsApp (com DDD) <input name="telefone" required inputmode="tel" autocomplete="tel" placeholder="(47) 98888-0000"></label>
+          <label>Empresa (obrigatório para lojista) <input name="empresa" autocomplete="organization"></label>
+          <label>CNPJ ou CPF <input name="documento" required inputmode="numeric" placeholder="só números" autocomplete="off"></label>
+          <label>Cidade / UF <input name="cidade" required minlength="4" placeholder="Blumenau / SC"></label>
+          <label>E-mail <input name="email" type="email" required autocomplete="email"></label>
+          <label>Você é <select name="tipo" required><option value="">Selecione…</option><option>Lojista / distribuidor</option><option>Eletricista / instalador</option><option>Consumidor</option></select></label>
           <label class="full">Observações <textarea name="obs" rows="3" placeholder="Prazo desejado, forma de entrega, cores, referências…"></textarea></label>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px">

@@ -320,6 +320,9 @@ table.specs td:first-child { color: var(--cinza); width: 38%; }
 .qtd-ctl input { width: 56px; height: 32px; border: 0; text-align: center; font: 700 .95rem var(--fonte-corpo); color: var(--grafite); -moz-appearance: textfield; }
 .qtd-ctl input::-webkit-outer-spin-button, .qtd-ctl input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 table.var td.qtd { white-space: nowrap; width: 1%; }
+.form-erros { grid-column: 1 / -1; border: 1px solid var(--vermelho); border-left-width: 4px; border-radius: .5rem; background: #fff5f4; color: var(--grafite); padding: .75rem 1rem; font-size: .9rem; }
+.form-erros ul { margin: .4rem 0 0; padding-left: 1.2rem; } .form-erros li { margin: .15rem 0; }
+input.invalido, select.invalido { border-color: var(--vermelho) !important; box-shadow: 0 0 0 3px rgb(217 52 43 / .15); }
 .form-pedido-acoes { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
 .pedido-aviso { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--navy); color: #fff; padding: 12px 18px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); font-size: .95rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 40; max-width: calc(100% - 32px); }
 .pedido-aviso.visivel { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }

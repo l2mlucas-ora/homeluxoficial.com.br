@@ -1,0 +1,36 @@
+{
+  "_comentario": "Config editável do site. O gerador (ferramentas/gerar-catalogo.py) injeta estes valores em todas as páginas. Números só com dígitos (DDI+DDD+número). O WhatsApp abaixo é PLACEHOLDER até o GATE B — o checar-site.py acusa enquanto terminar em 999999999.",
+  "empresa": "Homelux Soluções Elétricas",
+  "razao_social": "JET LUX IND. COM. INJ. PLAST. LTDA",
+  "cidade": "Blumenau",
+  "uf": "SC",
+  "cep": "89036-000",
+  "endereco": "Blumenau – Santa Catarina – CEP 89036-000",
+  "telefones": [
+    "(47) 3328-1319",
+    "(47) 3304-1940"
+  ],
+  "telefone_principal_link": "+554733281319",
+  "email": "contato@homeluxoficial.com.br",
+  "site": "https://www.homeluxoficial.com.br",
+  "whatsapp": "5547988783969",
+  "whatsapp_exibicao": "(47) 98878-3969",
+  "crm_pedidos_url": "https://crm.homeluxoficial.com.br/api/pedido-site",
+  "_crm_pedidos_url": "URL pública do CRM que recebe o pedido do site antes de abrir o WhatsApp (ex.: https://crm.homeluxoficial.com.br/api/pedido-site). Vazio = não envia (só WhatsApp).",
+  "instagram": "homeluxoficial",
+  "anos": 40,
+  "missao": "Produzir sem poluir, com qualidade, buscando inovações, gerando sempre a expectativa de economia, conforto e bem-estar coletivo.",
+  "mensagens_whatsapp": {
+    "geral": "Olá! Vim pelo site da Homelux e quero falar sobre produtos.",
+    "promo": "Olá! Vi o Esquenta de Setembro no site da Homelux e quero as condições dos itens da promoção (caixa 23×19, cordão de luzes, arandela DECOR, parafuso de vaso). Sou: ( ) lojista/distribuidor ( ) consumidor.",
+    "produto": "Olá! Vim pelo site da Homelux. Quero orçamento de: {nome} (cód. {codigo}). Quantidade: ___ . Sou: ( ) lojista/distribuidor ( ) consumidor.",
+    "representante": "Olá! Tenho interesse em ser representante Homelux. Minha região: ___",
+    "catalogo": "Olá! Vim pelo site da Homelux e quero receber o catálogo em PDF."
+  },
+  "horario": "Segunda a sexta, 8h às 12h e 13h30 às 18h",
+  "google_maps": "https://www.google.com/maps/search/?api=1&query=Homelux+Solu%C3%A7%C3%B5es+El%C3%A9tricas+Blumenau",
+  "dominio": "homeluxoficial.com.br",
+  "dominio_antigo": "homelux.com.br (hackeado na Viazoom — redirecionar para o novo quando sair do ar)",
+  "_pedido": "O texto do pedido é montado em site/assets/pedido.js: blocos *PEDIDO PELO SITE — HOMELUX* (ref. data-hora), *DADOS DO CLIENTE* (só campos preenchidos), *ITENS DO PEDIDO* numerados (código em negrito, versão · qtd · embalagem), *OBSERVAÇÕES*. O cadastro de lojista segue o mesmo padrão em site/assets/site.js.",
+  "email_nota": "Caixa a criar: Cloudflare Email Routing (grátis) encaminhando para o Gmail da Homelux, ou Google Workspace. O antigo homelux@homelux.com.br não existe."
+}
