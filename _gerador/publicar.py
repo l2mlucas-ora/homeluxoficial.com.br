@@ -19,6 +19,7 @@ NO_ESTUDIO = os.path.exists(os.path.join(ESTUDIO, "catalogo", "produtos.csv"))
 RAIZ = ESTUDIO if NO_ESTUDIO else os.path.join(G, "_trabalho")
 CAT = os.path.join(RAIZ, "catalogo")
 CRM = os.environ.get("CRM_URL", "https://crm.homeluxoficial.com.br").rstrip("/")
+UA = "homelux-publicar/1.0 (+https://www.homeluxoficial.com.br)"  # o Cloudflare bloqueia o agente padrao do urllib (403)
 
 def token():
     t = os.environ.get("CATALOGO_TOKEN", "").strip()
@@ -33,7 +34,7 @@ def token():
 def baixar(url, cabecalhos=None, tentativas=3):
     for i in range(tentativas):
         try:
-            req = urllib.request.Request(url, headers=cabecalhos or {})
+            req = urllib.request.Request(url, headers={"User-Agent": UA, **(cabecalhos or {})})
             with urllib.request.urlopen(req, timeout=120) as r: return r.read()
         except (urllib.error.URLError, TimeoutError) as e:
             if i == tentativas - 1: raise
@@ -51,7 +52,7 @@ def sincronizar(tok):
         if os.path.exists(destino) and os.path.getsize(destino) > 0 and os.environ.get("HOMELUX_REBAIXAR") != "1":
             # já temos: confere o tamanho remoto (HEAD) para pegar substituições com o mesmo nome
             try:
-                req = urllib.request.Request(a["url"], method="HEAD")
+                req = urllib.request.Request(a["url"], method="HEAD", headers={"User-Agent": UA})
                 with urllib.request.urlopen(req, timeout=60) as r: tam = int(r.headers.get("Content-Length") or -1)
                 if tam == os.path.getsize(destino): continue
             except Exception: pass
@@ -84,7 +85,7 @@ def avisar(tok, status, detalhe, pdfs):
             corpo.write(f"--{limite}\r\nContent-Disposition: form-data; name=\"{n}\"; filename=\"{os.path.basename(p)}\"\r\nContent-Type: application/pdf\r\n\r\n".encode("utf-8"))
             corpo.write(io.open(p, "rb").read()); corpo.write(b"\r\n")
     corpo.write(f"--{limite}--\r\n".encode("utf-8"))
-    req = urllib.request.Request(f"{CRM}/api/catalogo/publicado", data=corpo.getvalue(), method="POST", headers={"Authorization": f"Bearer {tok}", "Content-Type": f"multipart/form-data; boundary={limite}"})
+    req = urllib.request.Request(f"{CRM}/api/catalogo/publicado", data=corpo.getvalue(), method="POST", headers={"Authorization": f"Bearer {tok}", "Content-Type": f"multipart/form-data; boundary={limite}", "User-Agent": UA})
     with urllib.request.urlopen(req, timeout=300) as r: print("CRM avisado:", r.read().decode("utf-8")[:200])
 
 def main():

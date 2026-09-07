@@ -60,6 +60,6 @@ jobs:
               if os.path.exists(p):
                 b.write(f"--{lim}\r\nContent-Disposition: form-data; name=\"{n}\"; filename=\"{os.path.basename(p)}\"\r\nContent-Type: application/pdf\r\n\r\n".encode()); b.write(open(p, "rb").read()); b.write(b"\r\n")
           b.write(f"--{lim}--\r\n".encode())
-          req = urllib.request.Request(f"{crm}/api/catalogo/publicado", data=b.getvalue(), method="POST", headers={"Authorization": f"Bearer {tok}", "Content-Type": f"multipart/form-data; boundary={lim}"})
+          req = urllib.request.Request(f"{crm}/api/catalogo/publicado", data=b.getvalue(), method="POST", headers={"Authorization": f"Bearer {tok}", "Content-Type": f"multipart/form-data; boundary={lim}", "User-Agent": "homelux-publicar/1.0 (+https://www.homeluxoficial.com.br)"})
           print(urllib.request.urlopen(req, timeout=300).read().decode()[:300])
           PY
