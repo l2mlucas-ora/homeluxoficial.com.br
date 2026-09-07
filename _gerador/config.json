@@ -33,5 +33,8 @@
   "dominio_antigo": "homelux.com.br (hackeado na Viazoom — redirecionar para o novo quando sair do ar)",
   "_pedido": "O texto do pedido é montado em site/assets/pedido.js: blocos *PEDIDO PELO SITE — HOMELUX* (ref. data-hora), *DADOS DO CLIENTE* (só campos preenchidos), *ITENS DO PEDIDO* numerados (código em negrito, versão · qtd · embalagem), *OBSERVAÇÕES*. O cadastro de lojista segue o mesmo padrão em site/assets/site.js.",
   "email_nota": "Caixa a criar: Cloudflare Email Routing (grátis) encaminhando para o Gmail da Homelux, ou Google Workspace. O antigo homelux@homelux.com.br não existe.",
-  "cnpj": "63.836.863/0001-13"
+  "cnpj": "63.836.863/0001-13",
+  "catalogo_pdf_url": "https://qfqsymixsednkpsxqcqo.supabase.co/storage/v1/object/public/produtos/pdf/catalogo-homelux.pdf",
+  "catalogo_tecnico_pdf_url": "https://qfqsymixsednkpsxqcqo.supabase.co/storage/v1/object/public/produtos/pdf/catalogo-tecnico-homelux.pdf",
+  "_catalogo_pdf": "PDFs gerados a cada 'Publicar no site' do CRM; o gerador troca os links data-pdf=\"catalogo\"/\"tecnico\" por estas URLs com carimbo de versão."
 }

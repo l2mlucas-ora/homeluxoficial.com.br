@@ -187,6 +187,15 @@ def body_attrs(cfg, pagina, raiz="", classe=""):
     crm = f' data-crm="{esc(cfg.get("crm_pedidos_url", ""))}"' if cfg.get("crm_pedidos_url") else ""
     return f'<body data-pagina="{esc(pagina)}"{cls} data-raiz="{raiz}" data-wa="{esc(cfg["whatsapp"])}"{crm} data-wa-msgs="{msgs}">'
 
+def carimbar_pdf(t, cfg):
+    """Links <a data-pdf="catalogo|tecnico"> apontam para o PDF mais recente (URL do CRM + carimbo de versão para furar cache)."""
+    v = datetime.datetime.now().strftime("%Y%m%d%H%M")
+    urls = {"catalogo": cfg.get("catalogo_pdf_url", ""), "tecnico": cfg.get("catalogo_tecnico_pdf_url", "")}
+    def sub(m):
+        tipo = m.group(1); u = urls.get(tipo)
+        return m.group(0) if not u else f'href="{u}?v={v}" data-pdf="{tipo}" target="_blank" rel="noopener"'
+    return re.sub(r'href="[^"]*"\s+data-pdf="(catalogo|tecnico)"(?:\s+target="[^"]*")?(?:\s+rel="[^"]*")?', sub, t)
+
 def carimbar_pagina(caminho, cfg, cats):
     """Substitui os blocos @head/@topo/@rodape e o <body> de uma página escrita à mão."""
     t = rd(caminho)
@@ -203,6 +212,7 @@ def carimbar_pagina(caminho, cfg, cats):
     t = re.sub(r"<!-- @head -->.*?<!-- /@head -->", lambda _: bloco_head(cfg, raiz, titulo, desc, canonical, extra=meta.get("head_extra", "")), t, flags=re.S)
     t = re.sub(r"<!-- @topo(?: [^>]*)?-->.*?<!-- /@topo -->", lambda _: bloco_topo(cfg, raiz, pagina, cats), t, flags=re.S)
     t = re.sub(r"<!-- @rodape(?: [^>]*)?-->.*?<!-- /@rodape -->", lambda _: bloco_rodape(cfg, cats, raiz), t, flags=re.S)
+    t = carimbar_pdf(t, cfg)
     mc = re.search(r'<body[^>]*\sclass="([^"]*)"', t)
     t = re.sub(r"<body[^>]*>", lambda _: body_attrs(cfg, pagina, raiz, mc.group(1) if mc else ""), t, count=1)
     wr(caminho, t)
