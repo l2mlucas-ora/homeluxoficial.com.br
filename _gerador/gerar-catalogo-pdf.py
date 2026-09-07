@@ -226,7 +226,7 @@ def main():
 <div class="topo"><img src="{logo_neg}"><div class="ano"><small>Catálogo de produtos</small>{hoje.year}</div></div>
 <div class="hero"><h1>Materiais elétricos e iluminação feitos em Blumenau</h1><p class="sub">{cfg["anos"]} anos fabricando para lojistas, distribuidores, instaladores e para a sua casa. {n_fam} famílias · {n_cod} códigos.</p></div>
 <div class="mosaico">{mosaico}</div>
-<div class="base"><div>{esc(cfg["razao_social"])}<br>{esc(cfg["endereco"])}</div><img src="{selo_neg}"></div></section>''')
+<div class="base"><div>{esc(cfg["razao_social"])} · CNPJ {esc(cfg.get("cnpj", ""))}<br>{esc(cfg["endereco"])}</div><img src="{selo_neg}"></div></section>''')
         # 2 abertura institucional
         pags.append(f'''<section class="pag abre"><img class="selo" src="{selo}"><span class="kicker">Quem somos</span><h2 style="font-size:22pt;margin-top:2mm">Homelux Soluções Elétricas</h2>
 <p class="lead">Há {cfg["anos"]} anos a Homelux fabrica em Blumenau/SC produtos elétricos e de iluminação pensados para quem instala, para quem revende e para quem usa todos os dias.</p>
@@ -273,7 +273,7 @@ def main():
 <div class="grade">{"".join(familia(p, precos) for p in bloco)}</div>{rod(n)}</section>'''); n += 1
         # contracapa
         qrs = "".join(f'<div><img src="{u}"><span>{t}</span></div>' for u, t in ((qr_site, "Site"), (qr_cat, "Catálogo online"), (qr_wa, "WhatsApp comercial")) if u)
-        pags.append(f'''<section class="pag contra"><img src="{logo_neg}" style="width:70mm"><p style="margin-top:6mm"><b style="color:#fff">{esc(cfg["razao_social"])}</b><br>{esc(cfg["endereco"])}</p><p>SAC {esc(" / ".join(cfg["telefones"]))} · {esc(cfg["email"])}</p><p>www.homeluxoficial.com.br · @{esc(cfg["instagram"])}</p><span class="wa">Pedidos pelo WhatsApp {esc(cfg["whatsapp_exibicao"])}</span><div class="qrs">{qrs}</div><img src="{selo_neg}" style="height:12mm;margin-top:8mm"><p style="font-size:7.5pt;margin-top:4mm">Catálogo {hoje.strftime("%m/%Y")}. Especificações conforme cadastro oficial da Homelux. Imagens ilustrativas. Preços e condições sob consulta.{" Tabela de preços de uso exclusivo do lojista." if precos else ""}</p></section>''')
+        pags.append(f'''<section class="pag contra"><img src="{logo_neg}" style="width:70mm"><p style="margin-top:6mm"><b style="color:#fff">{esc(cfg["razao_social"])}</b><br>CNPJ {esc(cfg.get("cnpj", ""))}<br>{esc(cfg["endereco"])}</p><p>SAC {esc(" / ".join(cfg["telefones"]))} · {esc(cfg["email"])}</p><p>www.homeluxoficial.com.br · @{esc(cfg["instagram"])}</p><span class="wa">Pedidos pelo WhatsApp {esc(cfg["whatsapp_exibicao"])}</span><div class="qrs">{qrs}</div><img src="{selo_neg}" style="height:12mm;margin-top:8mm"><p style="font-size:7.5pt;margin-top:4mm">Catálogo {hoje.strftime("%m/%Y")}. Especificações conforme cadastro oficial da Homelux. Imagens ilustrativas. Preços e condições sob consulta.{" Tabela de preços de uso exclusivo do lojista." if precos else ""}</p></section>''')
     doc = f'<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Catálogo Homelux {hoje.year}</title><style>{fontes}</style><style>{CSS}</style></head><body>{"".join(pags)}</body></html>'
     os.makedirs(os.path.join(CAT, "pdf"), exist_ok=True)
     nome = a.saida or os.path.join(CAT, "pdf", ("promo-homelux-" + gc.slug(a.promo) + ".pdf") if a.promo else f"catalogo-homelux-{mes}{'-precos' if precos else ''}{'-' + gc.slug(a.categorias) if a.categorias else ''}{'-destaques' if a.destaques else ''}.pdf")

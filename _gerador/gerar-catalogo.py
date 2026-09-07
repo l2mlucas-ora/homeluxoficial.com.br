@@ -175,7 +175,7 @@ def bloco_rodape(cfg, cats, raiz):
     t = rd(os.path.join(TPL, "rodape.html"))
     links_cat = "".join(f'<li><a href="{raiz}catalogo/index.html?cat={c["id"]}">{esc(c["nome"])}</a></li>' for c in cats)
     tel = "".join(f'<li><a href="tel:{re.sub(r"[^0-9+]", "", "+55" + t)}">{esc(t)}</a></li>' for t in cfg["telefones"])
-    for k, v in {"raiz": raiz, "razao_social": esc(cfg["razao_social"]), "endereco": esc(cfg["endereco"]), "anos": cfg["anos"],
+    for k, v in {"raiz": raiz, "razao_social": esc(cfg["razao_social"]), "cnpj": esc(cfg.get("cnpj", "")), "endereco": esc(cfg["endereco"]), "anos": cfg["anos"],
                  "links_categorias": links_cat, "links_telefones": tel, "whatsapp_exibicao": esc(cfg["whatsapp_exibicao"]),
                  "email": esc(cfg["email"]), "instagram": esc(cfg["instagram"]), "ano": datetime.date.today().year}.items():
         t = t.replace("{{" + k + "}}", str(v))
