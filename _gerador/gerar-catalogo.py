@@ -301,6 +301,9 @@ def copiar_marca():
               "selo-industria-brasileira.svg", "favicon.svg", "favicon-32.png", "favicon-180.png", "favicon-512.png", "og-image-1200x630.png"]:
         src = os.path.join(MARCA, f)
         if os.path.exists(src): shutil.copy(src, os.path.join(dst, f))
+    for f in ["qr-site.svg", "qr-whatsapp.svg", "qr-catalogo.svg"]:   # QRs (marca/qr/) usados nos PDFs
+        src = os.path.join(MARCA, "qr", f)
+        if os.path.exists(src): shutil.copy(src, os.path.join(dst, f))
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
