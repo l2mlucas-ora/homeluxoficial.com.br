@@ -107,6 +107,16 @@
         '\n*ITENS DO PEDIDO* (' + itens.length + (itens.length === 1 ? ' código' : ' códigos') + ' · ' + total(itens) + ' unidades)\n' + linhas.join('\n') + '\n' +
         (d.get('obs') ? '\n*OBSERVAÇÕES*\n' + d.get('obs').trim() + '\n' : '') +
         '\nAguardo orçamento com prazo e condições de pagamento. Obrigado!';
+      // registra no CRM (se configurado) antes de abrir o WhatsApp — falha silenciosa: o WhatsApp abre de qualquer jeito
+      var crm = document.body.getAttribute('data-crm');
+      if (crm) {
+        try {
+          var ctrl = ('AbortController' in window) ? new AbortController() : null; if (ctrl) setTimeout(function () { ctrl.abort(); }, 4000);
+          fetch(crm, { method: 'POST', mode: 'cors', keepalive: true, headers: { 'content-type': 'application/json' }, signal: ctrl ? ctrl.signal : undefined,
+            body: JSON.stringify({ ref: ref, nome: d.get('nome'), empresa: d.get('empresa'), documento: d.get('documento'), tipo: d.get('tipo'), cidade: d.get('cidade'), telefone: d.get('telefone'), email: d.get('email'), obs: d.get('obs'), hp: d.get('hp') || '',
+              itens: itens.map(function (it) { return { codigo: it.codigo, familia: it.familia, nome: it.nome, qtd: it.qtd, embalagem: it.embalagem }; }) }) }).catch(function () {});
+        } catch (e) { /* ignora */ }
+      }
       window.open('https://wa.me/' + numero + '?text=' + encodeURIComponent(txt), '_blank', 'noopener');
       var ok = document.getElementById('pedido-enviado'); if (ok) ok.hidden = false;
     });
