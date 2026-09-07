@@ -346,3 +346,19 @@ footer.rodape { background: var(--navy-escuro); color: #c9cfe0; padding: 48px 0 
 .rodape .legal { border-top: 1px solid rgb(255 255 255 / .12); margin-top: 32px; padding-top: 18px; font-size: .82rem; color: #8f98b3; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 @media (max-width: 900px) { .rodape-in { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .rodape-in { grid-template-columns: 1fr; } }
+
+/* Promoção (Esquenta de Setembro) */
+.tag-promo { display: inline-block; background: var(--vermelho); color: #fff; font-weight: 800; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; padding: 6px 12px; border-radius: 6px; }
+.fachada .slide-promo .texto h1 { max-width: 22ch; }
+.promo-hero { background: linear-gradient(100deg, var(--navy-escuro), var(--navy)); color: #fff; padding: 56px 0 40px; }
+.promo-hero h1 { color: #fff; font-size: clamp(2rem, 4.5vw, 3rem); margin: 14px 0 12px; }
+.promo-hero .lead { color: #c9cfe0; font-size: 1.1rem; max-width: 60ch; }
+.promo-hero .aviso-claro { color: #9fb0d8; font-size: .9rem; margin-top: 10px; }
+.promo-itens { padding: 40px 0 56px; background: var(--papel); }
+.promo-grade { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.promo-card { background: #fff; border: 1px solid var(--linha); border-radius: var(--radius-md); padding: 20px; }
+.promo-card img { width: 100%; max-height: 240px; object-fit: contain; display: block; margin: 0 auto 12px; }
+.promo-card h2 { font-size: 1.25rem; margin: 0 0 4px; }
+.promo-card .secundario { color: var(--cinza); font-size: .9rem; margin: 0 0 10px; }
+.promo-acoes { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+@media (max-width: 720px) { .promo-grade { grid-template-columns: 1fr; } }
