@@ -174,7 +174,12 @@ def bloco_topo(cfg, raiz, atual, cats=None):
 def bloco_rodape(cfg, cats, raiz):
     t = rd(os.path.join(TPL, "rodape.html"))
     links_cat = "".join(f'<li><a href="{raiz}catalogo/index.html?cat={c["id"]}">{esc(c["nome"])}</a></li>' for c in cats)
-    tel = "".join(f'<li><a href="tel:{re.sub(r"[^0-9+]", "", "+55" + t)}">{esc(t)}</a></li>' for t in cfg["telefones"])
+    rot = cfg.get("telefones_rotulos", {})
+    def li_tel(t):
+        r = rot.get(t, ""); dig = re.sub(r"[^0-9]", "", t)
+        if dig and cfg["whatsapp"].endswith(dig): return f'<li><a href="#" data-wa-msg="geral" rel="noopener">{esc(t)}{(" · " + esc(r)) if r else ""}</a></li>'
+        return f'<li><a href="tel:{re.sub(r"[^0-9+]", "", "+55" + t)}">{esc(t)}{(" · " + esc(r)) if r else ""}</a></li>'
+    tel = "".join(li_tel(t) for t in cfg["telefones"]) + (f'<li class="secundario">{esc(cfg["atendimento"])}</li>' if cfg.get("atendimento") else "")
     for k, v in {"raiz": raiz, "razao_social": esc(cfg["razao_social"]), "cnpj": esc(cfg.get("cnpj", "")), "endereco": esc(cfg["endereco"]), "anos": cfg["anos"],
                  "links_categorias": links_cat, "links_telefones": tel, "whatsapp_exibicao": esc(cfg["whatsapp_exibicao"]),
                  "email": esc(cfg["email"]), "instagram": esc(cfg["instagram"]), "ano": datetime.date.today().year}.items():

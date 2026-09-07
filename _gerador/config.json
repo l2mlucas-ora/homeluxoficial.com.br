@@ -13,8 +13,8 @@
   "telefone_principal_link": "+554733281319",
   "email": "contato@homeluxoficial.com.br",
   "site": "https://www.homeluxoficial.com.br",
-  "whatsapp": "5547988783969",
-  "whatsapp_exibicao": "(47) 98878-3969",
+  "whatsapp": "554733281319",
+  "whatsapp_exibicao": "(47) 3328-1319",
   "crm_pedidos_url": "https://crm.homeluxoficial.com.br/api/pedido-site",
   "_crm_pedidos_url": "URL pública do CRM que recebe o pedido do site antes de abrir o WhatsApp (ex.: https://crm.homeluxoficial.com.br/api/pedido-site). Vazio = não envia (só WhatsApp).",
   "instagram": "homeluxoficial",
@@ -36,5 +36,10 @@
   "cnpj": "63.836.863/0001-13",
   "catalogo_pdf_url": "https://qfqsymixsednkpsxqcqo.supabase.co/storage/v1/object/public/produtos/pdf/catalogo-homelux.pdf",
   "catalogo_tecnico_pdf_url": "https://qfqsymixsednkpsxqcqo.supabase.co/storage/v1/object/public/produtos/pdf/catalogo-tecnico-homelux.pdf",
-  "_catalogo_pdf": "PDFs gerados a cada 'Publicar no site' do CRM; o gerador troca os links data-pdf=\"catalogo\"/\"tecnico\" por estas URLs com carimbo de versão."
+  "_catalogo_pdf": "PDFs gerados a cada 'Publicar no site' do CRM; o gerador troca os links data-pdf=\"catalogo\"/\"tecnico\" por estas URLs com carimbo de versão.",
+  "telefones_rotulos": {
+    "(47) 3328-1319": "telefone e WhatsApp",
+    "(47) 3304-1940": "SAC"
+  },
+  "atendimento": "Atendimento ao cliente e suporte técnico sobre produtos."
 }
