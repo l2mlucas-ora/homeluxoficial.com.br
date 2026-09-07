@@ -364,6 +364,8 @@ footer.rodape { background: var(--navy-escuro); color: #c9cfe0; padding: 48px 0 
 .promo-card h2 { font-size: 1.25rem; margin: 0 0 4px; }
 .promo-card .secundario { color: var(--cinza); font-size: .9rem; margin: 0 0 10px; }
 .promo-acoes { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+section.cta { padding: 56px 0 72px; } section.cta .cta-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; } section.cta .cta-in p { max-width: 60ch; margin-bottom: 0; }
+.promo-card table.var td { padding: 8px 10px; } .promo-card table.var td.cod { font-weight: 700; color: var(--navy); white-space: nowrap; }
 @media (max-width: 720px) { .promo-grade { grid-template-columns: 1fr; } }
 
 /* abertura (logo animada, uma vez por sessão) */

@@ -270,7 +270,7 @@ def carregar_promocao():
     return d if d and d.get("itens") else None
 
 def _qtd_html(cod):
-    return f'<td class="qtd"><button type="button" data-mais="-1" aria-label="menos">−</button><input type="number" min="0" placeholder="0" aria-label="Quantidade {esc(cod)}"><button type="button" data-mais="1" aria-label="mais">+</button></td>'
+    return f'<td class="qtd"><div class="qtd-ctl"><button type="button" data-mais="-1" aria-label="Menos">−</button><input type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-label="Quantidade do código {esc(cod)}"><button type="button" data-mais="1" aria-label="Mais">+</button></div></td>'
 
 def html_promocao(promo, prods, cfg):
     """Devolve (slide_home, corpo_pagina, meta_pagina, mensagem_whatsapp). Sem promoção: slide vazio e página 'sem promoção'."""
@@ -305,7 +305,7 @@ def html_promocao(promo, prods, cfg):
         vari = p["variacoes"] if p and p["variacoes"] else [{"codigo": i["codigo"], "nome": ""}]
         linhas = "".join(f'<tr data-codigo="{esc(v["codigo"])}" data-nome="{esc((i["nome"] + (" " + v["nome"] if v["nome"] else "") + (" (emb. " + emb + ")" if emb else "")).strip())}"><td class="cod">{esc(v["codigo"])}</td><td>{esc(v["nome"] or i["nome"])}</td>{_qtd_html(v["codigo"])}</tr>' for v in vari[:12])
         cards += (f'<article class="promo-card"><a href="{link}">{img}</a><h2>{esc(i["nome"])}</h2><p class="secundario">{esc(i.get("detalhe", ""))}</p>'
-                  f'<table class="variacoes"><tbody>{linhas}</tbody></table></article>')
+                  f'<table class="var variacoes"><tbody>{linhas}</tbody></table></article>')
     corpo = (f'<section class="promo-hero"><div class="wrap"><span class="tag-promo">{esc(tag)}</span><h1>{esc(titulo)}</h1>'
              f'<p class="lead">{esc(sub) + ". " if sub else ""}Escolha as quantidades, adicione ao pedido e envie pelo WhatsApp: o comercial responde com tabela e prazo.</p>'
              f'{("<p class=" + chr(34) + "aviso-claro" + chr(34) + ">" + esc(cond) + "</p>") if cond else ""}</div></section>'
