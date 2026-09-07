@@ -33,7 +33,7 @@ jobs:
         run: |
           git config user.name "Homelux CRM"
           git config user.email "crm@homeluxoficial.com.br"
-          git add -A -- . ':!_gerador/_trabalho'
+          git add -A
           if git diff --cached --quiet; then echo "sem mudanças no site"; echo "mudou=0" >> "$GITHUB_OUTPUT"; else git commit -q -m "Catálogo publicado pelo CRM ($(date -u +%Y-%m-%d\ %H:%M) UTC)" && git push && echo "mudou=1" >> "$GITHUB_OUTPUT"; fi
       - name: Avisar o CRM (status + PDFs)
         if: always()
