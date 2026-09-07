@@ -1,7 +1,7 @@
 {
   "_comentario": "Config editável do site. O gerador (ferramentas/gerar-catalogo.py) injeta estes valores em todas as páginas. Números só com dígitos (DDI+DDD+número). O WhatsApp abaixo é PLACEHOLDER até o GATE B — o checar-site.py acusa enquanto terminar em 999999999.",
   "empresa": "Homelux Soluções Elétricas",
-  "razao_social": "JET LUX IND. COM. INJ. PLAST. LTDA",
+  "razao_social": "HOMEJET INDÚSTRIA E COMÉRCIO LTDA",
   "cidade": "Blumenau",
   "uf": "SC",
   "cep": "89036-000",
