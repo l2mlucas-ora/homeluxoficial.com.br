@@ -362,3 +362,9 @@ footer.rodape { background: var(--navy-escuro); color: #c9cfe0; padding: 48px 0 
 .promo-card .secundario { color: var(--cinza); font-size: .9rem; margin: 0 0 10px; }
 .promo-acoes { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 @media (max-width: 720px) { .promo-grade { grid-template-columns: 1fr; } }
+
+/* abertura (logo animada, uma vez por sessão) */
+.abertura { position: fixed; inset: 0; z-index: 9999; background: #fff; display: flex; align-items: center; justify-content: center; transition: opacity .45s ease; }
+.abertura img { width: min(64vw, 360px); height: auto; }
+.abertura.saindo { opacity: 0; pointer-events: none; }
+html.sem-abertura .abertura { display: none; }

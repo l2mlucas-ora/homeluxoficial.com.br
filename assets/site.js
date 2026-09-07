@@ -67,6 +67,10 @@
     });
   }
 
+  // abertura: logo animada some após ~2,2 s (ou ao tocar)
+  var ab = document.getElementById('abertura');
+  if (ab) { var fechar = function () { ab.classList.add('saindo'); setTimeout(function () { if (ab.parentNode) ab.parentNode.removeChild(ab); }, 500); }; ab.addEventListener('click', fechar); setTimeout(fechar, 2100); }
+
   // ?dev=1 mostra selos internos (foto provisória)
   if (/[?&]dev=1/.test(location.search)) body.classList.add('dev');
 
