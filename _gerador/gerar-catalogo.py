@@ -262,6 +262,77 @@ def pagina_produto(p, prods, cfg, cats):
         t = re.sub(r"<!-- @relacionados -->.*?<!-- /@relacionados -->", "", t, flags=re.S)
     return t
 
+def carregar_promocao():
+    p = os.path.join(CAT, "promocao.json")
+    if not os.path.exists(p): return None
+    try: d = json.load(io.open(p, encoding="utf-8"))
+    except Exception: return None
+    return d if d and d.get("itens") else None
+
+def _qtd_html(cod):
+    return f'<td class="qtd"><button type="button" data-mais="-1" aria-label="menos">−</button><input type="number" min="0" placeholder="0" aria-label="Quantidade {esc(cod)}"><button type="button" data-mais="1" aria-label="mais">+</button></td>'
+
+def html_promocao(promo, prods, cfg):
+    """Devolve (slide_home, corpo_pagina, meta_pagina, mensagem_whatsapp). Sem promoção: slide vazio e página 'sem promoção'."""
+    if not promo:
+        corpo = ('<section class="promo-hero"><div class="wrap"><span class="tag-promo">Promoções</span><h1>Nenhuma promoção ativa no momento</h1>'
+                 '<p class="lead">Acompanhe nossas redes e o WhatsApp comercial: a próxima campanha aparece aqui. Enquanto isso, o catálogo completo está sempre atualizado.</p>'
+                 '<p><a class="btn" href="catalogo/index.html">Ver o catálogo</a></p></div></section>')
+        return "", corpo, {"titulo": "Promoções — Homelux", "descricao": "Promoções da Homelux para lojistas, distribuidores e consumidores."}, cfg["mensagens_whatsapp"].get("promo", cfg["mensagens_whatsapp"]["geral"])
+    por_cod = {p["codigo"]: p for p in prods}
+    titulo = f'{promo.get("titulo", "").strip()} {promo.get("destaque", "").strip()}'.strip()
+    periodo = (promo.get("periodo") or "").strip()
+    tag = f'Promoção · {periodo.lower()}' if periodo else (promo.get("tag") or "Promoção")
+    sub = (promo.get("subtitulo") or "").strip().rstrip(".")
+    cond = (promo.get("condicao") or "").strip()
+    itens = promo["itens"][:4]
+    nomes = [i["nome"] for i in itens]
+    lista_nomes = ", ".join(nomes[:-1]) + (" e " + nomes[-1] if len(nomes) > 1 else nomes[0]) if nomes else ""
+    # slide da home (até 3 fotos)
+    fotos = [os.path.splitext(i["foto"])[0] for i in itens if i.get("foto")][:3]
+    imgs = "".join(f'<img class="p{n + 1}" src="catalogo/fotos/{esc(f)}.webp" alt="" width="600" height="600" loading="eager">' for n, f in enumerate(fotos))
+    slide = (f'<div class="wrap slide-in"><div class="texto"><span class="tag-promo">{esc(tag)}</span><h1>{esc(titulo)}{": " + esc(sub) if sub else ""}</h1>'
+             f'<p>{esc(lista_nomes)}{", com condição especial para lojista e distribuidor" if lista_nomes else ""}{(" · " + esc(periodo)) if periodo else ""}.</p>'
+             f'<div class="acoes"><a class="btn" href="promocoes.html">Ver a promoção</a><a class="btn wa" href="#" data-wa-msg="promo">Pedir condições no WhatsApp</a></div></div>'
+             f'<div class="produtos" aria-hidden="true">{imgs}</div></div>')
+    # página
+    cards = ""
+    for i in itens:
+        p = por_cod.get(i["codigo"]); foto = os.path.splitext(i["foto"])[0] if i.get("foto") else ""
+        img = f'<img src="catalogo/fotos/{esc(foto)}.webp" alt="{esc(i["nome"])}" width="600" height="600" loading="lazy">' if foto else ""
+        link = f'catalogo/p/{p["slug"]}.html' if p else "catalogo/index.html"
+        emb = p["embalagem"] if p else ""
+        vari = p["variacoes"] if p and p["variacoes"] else [{"codigo": i["codigo"], "nome": ""}]
+        linhas = "".join(f'<tr data-codigo="{esc(v["codigo"])}" data-nome="{esc((i["nome"] + (" " + v["nome"] if v["nome"] else "") + (" (emb. " + emb + ")" if emb else "")).strip())}"><td class="cod">{esc(v["codigo"])}</td><td>{esc(v["nome"] or i["nome"])}</td>{_qtd_html(v["codigo"])}</tr>' for v in vari[:12])
+        cards += (f'<article class="promo-card"><a href="{link}">{img}</a><h2>{esc(i["nome"])}</h2><p class="secundario">{esc(i.get("detalhe", ""))}</p>'
+                  f'<table class="variacoes"><tbody>{linhas}</tbody></table></article>')
+    corpo = (f'<section class="promo-hero"><div class="wrap"><span class="tag-promo">{esc(tag)}</span><h1>{esc(titulo)}</h1>'
+             f'<p class="lead">{esc(sub) + ". " if sub else ""}Escolha as quantidades, adicione ao pedido e envie pelo WhatsApp: o comercial responde com tabela e prazo.</p>'
+             f'{("<p class=" + chr(34) + "aviso-claro" + chr(34) + ">" + esc(cond) + "</p>") if cond else ""}</div></section>'
+             f'<section class="promo-itens"><div class="wrap"><form class="form-pedido" data-familia="{esc(titulo)}" data-embalagem="ver item"><div class="promo-grade">{cards}</div>'
+             f'<div class="form-pedido-acoes promo-acoes"><button class="btn" type="submit">Adicionar ao pedido</button><a class="link-seta" href="pedido.html">Ver pedido (<span class="pedido-badge" hidden>0</span>)</a><a class="btn wa" href="#" data-wa-msg="promo">Pedir condições pelo WhatsApp</a></div></form></div></section>'
+             f'<section class="cta"><div class="wrap cta-in"><div><span class="kicker">Também para o consumidor</span><h2>Encontrou o que precisa? Fale com a gente</h2><p>Consumidor final compra nas lojas parceiras ou pelo WhatsApp comercial. Lojista recebe a tabela na hora.</p></div><a class="btn wa" href="#" data-wa-msg="promo">Falar com o comercial</a></div></section>')
+    meta = {"titulo": f"{titulo} — promoção Homelux para lojistas e distribuidores", "descricao": f"{lista_nomes} com condição especial de fábrica{(' em ' + periodo.lower()) if periodo else ''}. Monte o pedido e envie pelo WhatsApp."}
+    msg = f"Olá! Vi a promoção {titulo} no site da Homelux e quero as condições dos itens ({lista_nomes}). Sou: ( ) lojista/distribuidor ( ) consumidor."
+    return slide, corpo, meta, msg
+
+def aplicar_promocao(promo, prods, cfg):
+    """Escreve o slide (index.html) e a página (promocoes.html) entre os marcadores @promo-slide / @promo; devolve a mensagem de WhatsApp."""
+    slide, corpo, meta, msg = html_promocao(promo, prods, cfg)
+    idx = os.path.join(SITE, "index.html")
+    if os.path.exists(idx):
+        t = rd(idx)
+        novo = (f'<article class="slide ativo slide-promo" data-slide="promo">{slide}</article>' if slide else "")
+        t2 = re.sub(r"<!-- @promo-slide -->.*?<!-- /@promo-slide -->", lambda _: f"<!-- @promo-slide -->\n      {novo}\n      <!-- /@promo-slide -->", t, flags=re.S)
+        if t2 != t: wr(idx, t2)
+    pg = os.path.join(SITE, "promocoes.html")
+    if os.path.exists(pg):
+        t = rd(pg)
+        t2 = re.sub(r"<!-- @promo -->.*?<!-- /@promo -->", lambda _: f"<!-- @promo -->\n{corpo}\n<!-- /@promo -->", t, flags=re.S)
+        t2 = re.sub(r"<!-- meta: \{.*?\} -->", lambda _: "<!-- meta: " + json.dumps(meta, ensure_ascii=False) + " -->", t2, count=1, flags=re.S)
+        if t2 != t: wr(pg, t2)
+    return msg
+
 def sitemap(cfg, prods, paginas):
     hoje = datetime.date.today().isoformat()
     urls = [cfg["site"] + "/" + ("" if p == "index.html" else p.replace("index.html", "")) for p in paginas]
@@ -317,6 +388,7 @@ def main():
         for p in prods:
             if p["ativo"] and p["categoria"] == c["id"] and p["subcategoria"] and p["subcategoria"] not in vistos: vistos.append(p["subcategoria"])
         SUBS_PRESENTES[c["id"]] = vistos
+    promo = carregar_promocao(); cfg["mensagens_whatsapp"]["promo"] = aplicar_promocao(promo, prods, cfg)   # promoção do CRM → slide, página e mensagem
     n_fotos = 0 if a.so_json else processar_fotos(linhas, a.forcar_fotos)
     copiar_marca(); copiar_desenhos(); copiar_catalogo_crm(); orfas = limpar_fotos_orfas(linhas)
     saida = {"gerado_em": datetime.datetime.now().isoformat(timespec="seconds"), "whatsapp": cfg["whatsapp"],

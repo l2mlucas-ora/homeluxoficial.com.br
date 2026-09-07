@@ -46,6 +46,7 @@ def sincronizar(tok):
     os.makedirs(os.path.join(CAT, "fotos"), exist_ok=True); os.makedirs(os.path.join(CAT, "desenhos"), exist_ok=True)
     io.open(os.path.join(CAT, "produtos.csv"), "w", encoding="utf-8", newline="").write(dados["produtos_csv"])
     io.open(os.path.join(CAT, "categorias.json"), "w", encoding="utf-8", newline="\n").write(json.dumps(dados["categorias"], ensure_ascii=False, indent=2) + "\n")
+    io.open(os.path.join(CAT, "promocao.json"), "w", encoding="utf-8", newline="\n").write(json.dumps(dados.get("promocao"), ensure_ascii=False, indent=2) + "\n")
     esperados = set(); n = 0
     for a in dados["arquivos"]:
         destino = os.path.join(CAT, a["destino"].replace("/", os.sep)); esperados.add(os.path.abspath(destino))
