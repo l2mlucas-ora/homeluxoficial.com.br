@@ -328,7 +328,10 @@ input.invalido, select.invalido { border-color: var(--vermelho) !important; box-
 .pedido-aviso.visivel { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
 .pedido-aviso a { color: var(--sol); font-weight: 700; text-decoration: none; margin-left: 6px; }
 .pedido { display: grid; gap: 20px; padding-bottom: 20px; }
-.pedido-tabela td.qtd input { width: 70px; padding: 6px 8px; border: 1.5px solid var(--linha); border-radius: var(--radius-sm); font: 700 .95rem var(--fonte-corpo); text-align: center; }
+.pedido-tabela td.qtd { white-space: nowrap; }
+.pedido-tabela td.qtd .qtd-ctl input { width: 62px; }
+.pedido-tabela td.qtd .qtd-ctl button { width: 36px; height: 40px; font-size: 1.2rem; }
+.pedido-tabela td.qtd .qtd-ctl { height: 40px; }
 .pedido-tabela .remover { width: 30px; height: 30px; border: 1.5px solid var(--linha); background: var(--branco); border-radius: 50%; color: var(--cinza); cursor: pointer; font-size: 1.1rem; line-height: 1; }
 .pedido-tabela .remover:hover { color: var(--vermelho); border-color: var(--vermelho); }
 .link-limpar { background: none; border: 0; color: var(--cinza); font: 500 .95rem var(--fonte-corpo); cursor: pointer; text-decoration: underline; }

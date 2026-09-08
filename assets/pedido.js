@@ -72,9 +72,27 @@
         if (it.embalagem) { c2.appendChild(document.createElement('br')); var e2 = document.createElement('span'); e2.className = 'secundario'; e2.textContent = 'emb. ' + it.embalagem; c2.appendChild(e2); }
         tr.appendChild(c2);
         var c3 = document.createElement('td'); c3.className = 'qtd';
-        var inp = document.createElement('input'); inp.type = 'number'; inp.min = '1'; inp.value = it.qtd; inp.setAttribute('aria-label', 'Quantidade de ' + it.codigo);
-        inp.addEventListener('change', function () { var v = parseInt(inp.value, 10) || 1; var arr = ler(); arr[idx].qtd = Math.max(1, v); gravar(arr); render(); });
-        c3.appendChild(inp); tr.appendChild(c3);
+        // controle de quantidade: dá para apagar e digitar (só normaliza ao sair do campo); − e + para o celular
+        var ctl = document.createElement('div'); ctl.className = 'qtd-ctl';
+        var menos = document.createElement('button'); menos.type = 'button'; menos.setAttribute('aria-label', 'Menos'); menos.textContent = '−';
+        var inp = document.createElement('input'); inp.type = 'number'; inp.min = '1'; inp.step = '1'; inp.inputMode = 'numeric'; inp.value = it.qtd; inp.setAttribute('aria-label', 'Quantidade de ' + it.codigo);
+        var mais = document.createElement('button'); mais.type = 'button'; mais.setAttribute('aria-label', 'Mais'); mais.textContent = '+';
+        function guardar(v, redesenhar) {
+          var arr = ler(); if (!arr[idx]) return;
+          arr[idx].qtd = Math.max(1, Math.min(100000, v));
+          gravar(arr);
+          if (redesenhar) render(); else { inp.value = arr[idx].qtd; resumo.textContent = arr.length + (arr.length === 1 ? ' código · ' : ' códigos · ') + total(arr) + ' unidades'; }
+        }
+        inp.addEventListener('focus', function () { inp.select(); });
+        inp.addEventListener('input', function () {            // enquanto digita: aceita vazio, só atualiza quando houver número
+          if (inp.value === '') return;
+          var v = parseInt(inp.value, 10); if (!isNaN(v) && v > 0) guardar(v, false);
+        });
+        inp.addEventListener('blur', function () { var v = parseInt(inp.value, 10); guardar(isNaN(v) || v < 1 ? 1 : v, false); });
+        menos.addEventListener('click', function () { guardar((parseInt(inp.value, 10) || 1) - 1, false); });
+        mais.addEventListener('click', function () { guardar((parseInt(inp.value, 10) || 0) + 1, false); });
+        ctl.appendChild(menos); ctl.appendChild(inp); ctl.appendChild(mais);
+        c3.appendChild(ctl); tr.appendChild(c3);
         var c4 = document.createElement('td'); var rm = document.createElement('button'); rm.type = 'button'; rm.className = 'remover'; rm.setAttribute('aria-label', 'Remover ' + it.codigo); rm.textContent = '×';
         rm.addEventListener('click', function () { var arr = ler(); arr.splice(idx, 1); gravar(arr); render(); });
         c4.appendChild(rm); tr.appendChild(c4);

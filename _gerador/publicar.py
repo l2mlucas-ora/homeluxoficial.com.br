@@ -47,6 +47,7 @@ def sincronizar(tok):
     io.open(os.path.join(CAT, "produtos.csv"), "w", encoding="utf-8", newline="").write(dados["produtos_csv"])
     io.open(os.path.join(CAT, "categorias.json"), "w", encoding="utf-8", newline="\n").write(json.dumps(dados["categorias"], ensure_ascii=False, indent=2) + "\n")
     io.open(os.path.join(CAT, "promocao.json"), "w", encoding="utf-8", newline="\n").write(json.dumps(dados.get("promocao"), ensure_ascii=False, indent=2) + "\n")
+    aplicar_empresa(dados.get("empresa"))
     esperados = set(); n = 0
     for a in dados["arquivos"]:
         destino = os.path.join(CAT, a["destino"].replace("/", os.sep)); esperados.add(os.path.abspath(destino))
@@ -68,6 +69,22 @@ def sincronizar(tok):
             if p not in esperados and not f.startswith("_") and not f.endswith(".md"): os.remove(p); removidos += 1
     print(f"\nCRM: {dados['familias']} famílias ({dados['ativas']} ativas), {len(dados['arquivos'])} arquivos ({n} baixados, {removidos} removidos)")
     return dados
+
+def aplicar_empresa(e):
+    """Dados da Conta do CRM entram no config.json do site (rodapé, contato, catálogos, WhatsApp)."""
+    if not e: return
+    p = os.path.join(G, "config.json"); cfg = json.load(io.open(p, encoding="utf-8")); antes = json.dumps(cfg, sort_keys=True)
+    tel = [t for t in [e.get("telefone"), e.get("sac")] if t]
+    cfg.update({"empresa": e.get("marca") or cfg.get("empresa"), "razao_social": e.get("razao_social") or cfg.get("razao_social"), "cnpj": e.get("cnpj", cfg.get("cnpj", "")),
+                "cidade": e.get("cidade") or cfg.get("cidade"), "uf": e.get("uf") or cfg.get("uf"), "cep": e.get("cep") or cfg.get("cep"), "endereco": e.get("endereco_curto") or cfg.get("endereco"),
+                "telefones": tel or cfg.get("telefones"), "telefones_rotulos": {t: r for t, r in [(e.get("telefone"), e.get("telefone_rotulo")), (e.get("sac"), e.get("sac_rotulo"))] if t and r},
+                "atendimento": e.get("atendimento", cfg.get("atendimento", "")), "email": e.get("email") or cfg.get("email"), "site": e.get("site") or cfg.get("site"),
+                "whatsapp": e.get("whatsapp") or cfg.get("whatsapp"), "whatsapp_exibicao": e.get("whatsapp_exibicao") or cfg.get("whatsapp_exibicao"),
+                "instagram": e.get("instagram") or cfg.get("instagram"), "anos": e.get("anos") or cfg.get("anos"), "missao": e.get("missao") or cfg.get("missao"), "horario": e.get("horario") or cfg.get("horario"),
+                "dominio": e.get("dominio") or cfg.get("dominio"), "slogan": e.get("slogan", cfg.get("slogan", "")), "descricao": e.get("descricao", cfg.get("descricao", "")), "responsavel": e.get("responsavel", cfg.get("responsavel", "")), "email_sac": e.get("email_sac", cfg.get("email_sac", "")), "endereco_retirada": e.get("endereco_retirada", cfg.get("endereco_retirada", ""))})
+    if e.get("telefone"): cfg["telefone_principal_link"] = "+55" + "".join(ch for ch in e["telefone"] if ch.isdigit())
+    if json.dumps(cfg, sort_keys=True) != antes:
+        io.open(p, "w", encoding="utf-8", newline="\n").write(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n"); print("config.json atualizado com a Conta do CRM")
 
 def rodar(script, *args):
     env = dict(os.environ, HOMELUX_RAIZ=RAIZ, HOMELUX_SITE=SITE)
