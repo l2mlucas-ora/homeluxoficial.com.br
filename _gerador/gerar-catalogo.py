@@ -295,6 +295,13 @@ def html_promocao(promo, prods, cfg):
                  '<p><a class="btn" href="catalogo/index.html">Ver o catálogo</a></p></div></section>')
         return "", corpo, {"titulo": "Promoções — Homelux", "descricao": "Promoções da Homelux para lojistas, distribuidores e consumidores."}, cfg["mensagens_whatsapp"].get("promo", cfg["mensagens_whatsapp"]["geral"])
     por_cod = {p["codigo"]: p for p in prods}
+    def foto_promo(item):
+        """Foto do item da promoção; se ela não existir mais (apagada no CRM), usa a 1ª foto do produto."""
+        base = os.path.splitext(item.get("foto") or "")[0]
+        if base and os.path.exists(os.path.join(SITE, "catalogo", "fotos", base + ".webp")): return base
+        p = por_cod.get(item["codigo"])
+        if p and p["fotos"]: return os.path.splitext(os.path.basename(p["fotos"][0]["src"]))[0]
+        return ""
     titulo = f'{promo.get("titulo", "").strip()} {promo.get("destaque", "").strip()}'.strip()
     periodo = (promo.get("periodo") or "").strip()
     tag = f'Promoção · {periodo.lower()}' if periodo else (promo.get("tag") or "Promoção")
@@ -304,7 +311,7 @@ def html_promocao(promo, prods, cfg):
     nomes = [i["nome"] for i in itens]
     lista_nomes = ", ".join(nomes[:-1]) + (" e " + nomes[-1] if len(nomes) > 1 else nomes[0]) if nomes else ""
     # slide da home (até 3 fotos)
-    fotos = [os.path.splitext(i["foto"])[0] for i in itens if i.get("foto")][:3]
+    fotos = [f for f in (foto_promo(i) for i in itens) if f][:3]
     imgs = "".join(f'<img class="p{n + 1}" src="catalogo/fotos/{esc(f)}.webp" alt="" width="600" height="600" loading="eager">' for n, f in enumerate(fotos))
     slide = (f'<div class="wrap slide-in"><div class="texto"><span class="tag-promo">{esc(tag)}</span><h1>{esc(titulo)}{": " + esc(sub) if sub else ""}</h1>'
              f'<p>{esc(lista_nomes)}{", com condição especial para lojista e distribuidor" if lista_nomes else ""}{(" · " + esc(periodo)) if periodo else ""}.</p>'
@@ -313,7 +320,7 @@ def html_promocao(promo, prods, cfg):
     # página
     cards = ""
     for i in itens:
-        p = por_cod.get(i["codigo"]); foto = os.path.splitext(i["foto"])[0] if i.get("foto") else ""
+        p = por_cod.get(i["codigo"]); foto = foto_promo(i)
         img = f'<img src="catalogo/fotos/{esc(foto)}.webp" alt="{esc(i["nome"])}" width="600" height="600" loading="lazy">' if foto else ""
         link = f'catalogo/p/{p["slug"]}.html' if p else "catalogo/index.html"
         emb = p["embalagem"] if p else ""
