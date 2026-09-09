@@ -175,11 +175,16 @@ def bloco_rodape(cfg, cats, raiz):
     t = rd(os.path.join(TPL, "rodape.html"))
     links_cat = "".join(f'<li><a href="{raiz}catalogo/index.html?cat={c["id"]}">{esc(c["nome"])}</a></li>' for c in cats)
     rot = cfg.get("telefones_rotulos", {})
-    def li_tel(t):
-        r = rot.get(t, ""); dig = re.sub(r"[^0-9]", "", t)
-        if dig and cfg["whatsapp"].endswith(dig): return f'<li><a href="#" data-wa-msg="geral" rel="noopener">{esc(t)}{(" · " + esc(r)) if r else ""}</a></li>'
-        return f'<li><a href="tel:{re.sub(r"[^0-9+]", "", "+55" + t)}">{esc(t)}{(" · " + esc(r)) if r else ""}</a></li>'
-    tel = "".join(li_tel(t) for t in cfg["telefones"]) + (f'<li class="secundario">{esc(cfg["atendimento"])}</li>' if cfg.get("atendimento") else "")
+    contatos = cfg.get("contatos") or [{"numero": t, "rotulo": rot.get(t, "")} for t in cfg["telefones"]]
+    vistos = set(); linhas = []
+    for c in contatos:
+        numero = (c.get("numero") or "").strip()
+        if not numero or numero in vistos: continue
+        vistos.add(numero); r = (c.get("rotulo") or "").strip(); dig = re.sub(r"[^0-9]", "", numero)
+        rotulo = (" · " + esc(r)) if r else ""
+        if dig and cfg["whatsapp"].endswith(dig): linhas.append(f'<li><a href="#" data-wa-msg="geral" rel="noopener">{esc(numero)}{rotulo}</a></li>')
+        else: linhas.append(f'<li><a href="tel:{re.sub(r"[^0-9+]", "", "+55" + numero)}">{esc(numero)}{rotulo}</a></li>')
+    tel = "".join(linhas) + (f'<li class="secundario">{esc(cfg["atendimento"])}</li>' if cfg.get("atendimento") else "")
     for k, v in {"raiz": raiz, "razao_social": esc(cfg["razao_social"]), "cnpj": esc(cfg.get("cnpj", "")), "endereco": esc(cfg["endereco"]), "anos": cfg["anos"],
                  "links_categorias": links_cat, "links_telefones": tel, "whatsapp_exibicao": esc(cfg["whatsapp_exibicao"]),
                  "email": esc(cfg["email"]), "instagram": esc(cfg["instagram"]), "ano": datetime.date.today().year}.items():

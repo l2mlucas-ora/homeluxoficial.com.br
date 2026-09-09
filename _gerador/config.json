@@ -8,7 +8,7 @@
   "endereco": "Blumenau – Santa Catarina – CEP 89036-000",
   "telefones": [
     "(47) 3328-1319",
-    "(47) 3328-1319"
+    "(47) 3304-1940"
   ],
   "telefone_principal_link": "+554733281319",
   "email": "contato@homeluxoficial.com.br",
@@ -37,13 +37,21 @@
   "catalogo_pdf_url": "https://qfqsymixsednkpsxqcqo.supabase.co/storage/v1/object/public/produtos/pdf/catalogo-homelux.pdf",
   "catalogo_tecnico_pdf_url": "https://qfqsymixsednkpsxqcqo.supabase.co/storage/v1/object/public/produtos/pdf/catalogo-tecnico-homelux.pdf",
   "_catalogo_pdf": "PDFs gerados a cada 'Publicar no site' do CRM; o gerador troca os links data-pdf=\"catalogo\"/\"tecnico\" por estas URLs com carimbo de versão.",
-  "telefones_rotulos": {
-    "(47) 3328-1319": "SAC"
-  },
+  "telefones_rotulos": {},
   "atendimento": "Atendimento ao cliente e suporte técnico sobre produtos.",
   "slogan": "Soluções elétricas",
   "descricao": "Materiais elétricos e iluminação fabricados em Blumenau/SC há 40 anos, para lojistas, distribuidores, instaladores e consumidores.",
   "responsavel": "Osni Fritzke · Diretor Comercial",
   "email_sac": "",
-  "endereco_retirada": ""
+  "endereco_retirada": "",
+  "contatos": [
+    {
+      "numero": "(47) 3328-1319",
+      "rotulo": "telefone e WhatsApp"
+    },
+    {
+      "numero": "(47) 3304-1940",
+      "rotulo": "SAC"
+    }
+  ]
 }
