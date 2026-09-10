@@ -173,13 +173,36 @@ def fig(p, i=0, cls=""):
     if len(fotos) <= i: return f'<figure class="{cls}"></figure>'
     return f'<figure class="{cls}"><img src="{foto_src(fotos[i])}" alt=""></figure>'
 
+def peso_familia(p):
+    """Quanto a família ocupa da página: a de muitos códigos vira cartão de largura inteira
+    (classe .largo) e come duas vagas da grade de 2×2. Sem isso a página ganha uma terceira
+    fileira e o último cartão entra por cima do rodapé."""
+    return 2 if len(p["variacoes"]) > 7 else 1
+
+def paginar_familias(fams, por_pagina=4, colunas=2):
+    """Monta as páginas contando FILEIRAS, não cartões. Um cartão largo (muitos códigos) ocupa a
+    fileira inteira e, se ficar sozinho na fileira, a vaga do lado se perde — era isso que fazia
+    a página ganhar uma terceira fileira e o último cartão cair por cima do rodapé."""
+    fileiras, atual = [], []
+    for p in fams:
+        if peso_familia(p) == colunas:
+            if atual: fileiras.append(atual); atual = []
+            fileiras.append([p])
+        else:
+            atual.append(p)
+            if len(atual) == colunas: fileiras.append(atual); atual = []
+    if atual: fileiras.append(atual)
+    por_pag_fileiras = max(1, por_pagina // colunas)
+    return [[p for fila in fileiras[i:i + por_pag_fileiras] for p in fila]
+            for i in range(0, len(fileiras), por_pag_fileiras)]
+
 def familia(p, precos):
     linhas = ""
     for v in p["variacoes"]:
         preco = f'<td class="preco">R$ {precos[v["codigo"]]}</td>' if precos and v["codigo"] in precos else ("<td></td>" if precos else "")
         linhas += f'<tr><td class="cod">{esc(v["codigo"])}</td><td>{esc(v["nome"]) or esc(p["nome"])}</td>{preco}</tr>'
     specs = " · ".join(f'{esc(s["k"])}: {esc(s["v"])}' for s in p["especificacoes"][:4])
-    largo = " largo" if len(p["variacoes"]) > 7 else ""
+    largo = " largo" if peso_familia(p) == 2 else ""
     extras = [f for f in p["fotos"][1:4] if foto_src(f)]
     thumbs = ('<div class="thumbs">' + "".join(f'<figure><img src="{foto_src(f)}" alt=""></figure>' for f in extras) + "</div>") if extras else ""
     tag = '<span class="tag">Destaque</span>' if p["destaque"] else ""
@@ -237,8 +260,8 @@ def main():
 <div class="linhas">{"".join(f'<div>{fig(capa_de(c))}<b>{esc(c["nome"])}</b></div>' for c in cats)}</div>{rod(2)}</section>''')
         n = 3
         # 3 linhas em destaque
-        if destaques:
-            itens = "".join(f'<div class="item">{fig(p)}<div><span class="tag">Destaque</span><h3 style="margin-top:1.5mm">{esc(p["nome"])}</h3><p>{esc(p["descricao_curta"])}</p><div class="cod">{esc(", ".join(v["codigo"] for v in p["variacoes"][:6]))}{"…" if len(p["variacoes"]) > 6 else ""} · emb. {esc(p["embalagem"])}</div></div></div>' for p in destaques[:8])
+        for lote in [destaques[i:i + 6] for i in range(0, len(destaques[:12]), 6)]:
+            itens = "".join(f'<div class="item">{fig(p)}<div><span class="tag">Destaque</span><h3 style="margin-top:1.5mm">{esc(p["nome"])}</h3><p>{esc(p["descricao_curta"])}</p><div class="cod">{esc(", ".join(v["codigo"] for v in p["variacoes"][:6]))}{"…" if len(p["variacoes"]) > 6 else ""} · emb. {esc(p["embalagem"])}</div></div></div>' for p in lote)
             pags.append(f'<section class="pag dest"><span class="kicker">Linhas em destaque</span><h2 style="font-size:18pt;margin-top:2mm">Os mais pedidos pelos lojistas</h2><div class="grade">{itens}</div>{rod(n)}</section>'); n += 1
         # 4 índice ilustrado — calcula as páginas de cada categoria antes
         POR_PAG = 4
@@ -267,9 +290,9 @@ def main():
             subs = c.get("subcategorias", {}); presentes = [subs.get(s, s) for s in dict.fromkeys(p["subcategoria"] for p in fams if p["subcategoria"])]
             pags.append(f'''<section class="pag div" id="cat-{c["id"]}"><div class="bloco"><div class="num">{i:02d}</div><h2>{esc(c["nome"])}</h2><p>{esc(c.get("descricao", ""))}</p><ul>{"".join(f"<li>{esc(s)}</li>" for s in presentes)}</ul></div>
 <div class="foto{' uma' if len(com_foto) == 1 else ''}">{"".join(fig(p) for p in com_foto)}</div>{rod(n, True)}</section>'''); n += 1
-            for j in range(0, len(fams), POR_PAG):
-                bloco = fams[j:j + POR_PAG]
-                pags.append(f'''<section class="pag"><div class="cat-topo"><h2>{esc(c["nome"])}</h2><span class="n">{len(fams)} famílias · página {j // POR_PAG + 1} de {-(-len(fams) // POR_PAG)}</span></div>
+            blocos_fam = paginar_familias(fams, POR_PAG)
+            for j, bloco in enumerate(blocos_fam):
+                pags.append(f'''<section class="pag"><div class="cat-topo"><h2>{esc(c["nome"])}</h2><span class="n">{len(fams)} famílias · página {j + 1} de {len(blocos_fam)}</span></div>
 <div class="grade">{"".join(familia(p, precos) for p in bloco)}</div>{rod(n)}</section>'''); n += 1
         # contracapa
         qrs = "".join(f'<div><img src="{u}"><span>{t}</span></div>' for u, t in ((qr_site, "Site"), (qr_cat, "Catálogo online"), (qr_wa, "WhatsApp comercial")) if u)

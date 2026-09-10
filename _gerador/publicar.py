@@ -96,6 +96,20 @@ def rodar(script, *args):
     print(r.stdout.strip());
     if r.returncode != 0: print(r.stderr.strip()); raise SystemExit(f"{script} falhou ({r.returncode})")
 
+def conferir_rodape(caminhos, detalhe):
+    """Confere se algum cartão do PDF invadiu a faixa do rodapé (o gerador pagina por fileira;
+    se um cartão crescer demais, o texto entra por cima do rodapé). Avisa, não derruba a publicação."""
+    checador = os.path.join(os.path.dirname(G), "..", "ferramentas", "checar-pdf-rodape.py")
+    checador = os.path.abspath(checador)
+    if not os.path.exists(checador): return
+    r = subprocess.run([sys.executable, checador, *caminhos], capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if r.returncode != 0:
+        print("AVISO: conteúdo por cima do rodapé em algum PDF:")
+        print((r.stdout or "").strip())
+        detalhe["rodape_invadido"] = True
+    else:
+        print((r.stdout or "").strip())
+
 def avisar(tok, status, detalhe, pdfs):
     """POST multipart para /api/catalogo/publicado (sem dependências externas)."""
     limite = uuid.uuid4().hex; corpo = io.BytesIO()
@@ -124,6 +138,7 @@ def main():
             pdfs["pdf_catalogo"] = os.path.join(CAT, "pdf", "catalogo-homelux.pdf"); rodar("gerar-catalogo-pdf.py", "--saida", pdfs["pdf_catalogo"])
             pdfs["pdf_tecnico"] = os.path.join(CAT, "pdf", "catalogo-tecnico-homelux.pdf"); rodar("gerar-catalogo-tecnico.py", "--saida", pdfs["pdf_tecnico"])
             detalhe["pdf_kb"] = {k: os.path.getsize(v) // 1024 for k, v in pdfs.items()}
+            conferir_rodape(list(pdfs.values()), detalhe)
         detalhe["segundos"] = int(time.time() - t0)
         if not a.sem_avisar: avisar(tok, "concluida", detalhe, pdfs)
         print(f"Publicação concluída em {detalhe['segundos']}s")
