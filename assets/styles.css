@@ -378,3 +378,46 @@ section.cta { padding: 56px 0 72px; } section.cta .cta-in { display: flex; flex-
 html.sem-abertura .abertura { display: none; }
 
 .card a.grande small { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--cinza); margin-left: .4rem; }
+
+/* ============================================================
+   Ajuste de largura no celular — nenhuma página pode ficar mais
+   larga que a tela (o sintoma era conteúdo deslocado com faixa
+   branca à direita em telas estreitas). Duas causas: itens de
+   grid nascem com min-width:auto (o conteúdo mais largo empurra
+   a coluna) e palavras longas (e-mail, código, URL) não quebram.
+   ============================================================ */
+
+.grid-2 > *, .grid-3 > *, .contato-grid > *, .produto > *, .promo-grade > *,
+.rodape-in > *, .pedido > *, .form-lojista > *, .hero-in > *, .fachada .slide-in > *,
+.categorias > *, .numeros > *, .grade > *, .linha-tempo li > * { min-width: 0; }
+
+.form-lojista label { min-width: 0; }
+.form-lojista input, .form-lojista select, .form-lojista textarea { width: 100%; min-width: 0; max-width: 100%; }
+
+/* palavras longas quebram em vez de esticar o bloco */
+p, li, h1, h2, h3, h4, dd, dt, figcaption, .lead, .secundario { overflow-wrap: break-word; }
+.card a, .rodape-in a, .migalhas, .ficha h1, a[href^="mailto:"], .contato-grid .card .grande { overflow-wrap: anywhere; }
+.contato-grid .card .grande { font-size: clamp(1.05rem, 4.6vw, 1.3rem); }
+
+/* telas bem estreitas (iPhone SE/mini): menos respiro lateral e cartões mais justos */
+@media (max-width: 380px) {
+  :root { --gutter: 16px; }
+  .numeros { grid-template-columns: 1fr; gap: 14px; }
+  .numeros b { font-size: 1.7rem; }
+  .promo-card table.var td { padding: 8px 6px; }
+  .qtd-ctl input, .pedido-tabela td.qtd .qtd-ctl input { width: 42px; }
+  .card, .promo-card { padding: 16px; }
+  .galeria .miniaturas button { width: 60px; height: 60px; }
+  .pedido-tabela td.qtd .qtd-ctl input { width: 48px; }
+  .pedido-tabela td.qtd .qtd-ctl button { width: 32px; }
+}
+
+/* rede de segurança: nada de rolagem horizontal no celular */
+@media (max-width: 900px) { html, body { max-width: 100%; overflow-x: hidden; } }
+
+/* iOS: campo com fonte menor que 16px faz o Safari dar zoom sozinho ao tocar —
+   e a página inteira fica "torta" (maior que a tela) até o visitante fechar o zoom.
+   Era o caso do campo de quantidade do pedido. No celular todo campo tem 16px. */
+@media (max-width: 900px) {
+  input, select, textarea, .qtd-ctl input, .busca input { font-size: 16px; }
+}
