@@ -421,3 +421,15 @@ p, li, h1, h2, h3, h4, dd, dt, figcaption, .lead, .secundario { overflow-wrap: b
 @media (max-width: 900px) {
   input, select, textarea, .qtd-ctl input, .busca input { font-size: 16px; }
 }
+
+/* slides de arte no destaque: o banner já traz nome, claim e código — o quadro é a peça inteira */
+.fachada .slide-arte { background: var(--navy); }
+.fachada .slide-arte a { display: block; }
+.fachada .slide-arte img { width: 100%; height: auto; display: block; }
+@media (max-width: 720px) { .fachada .slide-arte img { max-height: 78vh; object-fit: cover; object-position: top; } }
+.fachada .slide-arte { position: relative; }
+.fachada .acoes-arte { position: absolute; left: 0; right: 0; bottom: 22%; display: flex; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 720px) {
+  .fachada .acoes-arte { position: static; padding-top: 18px; padding-bottom: 64px; justify-content: center; }
+  .fachada .slide-arte img { max-height: none; object-fit: contain; }
+}
