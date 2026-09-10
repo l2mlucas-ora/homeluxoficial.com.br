@@ -430,6 +430,8 @@ p, li, h1, h2, h3, h4, dd, dt, figcaption, .lead, .secundario { overflow-wrap: b
 .fachada .slide-arte { position: relative; }
 .fachada .acoes-arte { position: absolute; left: 0; right: 0; bottom: 22%; display: flex; gap: 12px; flex-wrap: wrap; }
 @media (max-width: 720px) {
-  .fachada .acoes-arte { position: static; padding-top: 18px; padding-bottom: 64px; justify-content: center; }
+  .fachada .acoes-arte { position: static; padding-top: 18px; padding-bottom: 64px; }
+  .fachada .acoes-arte .btn { flex: 1 1 46%; justify-content: center; text-align: center; }
   .fachada .slide-arte img { max-height: none; object-fit: contain; }
 }
+@media (max-width: 430px) { .fachada .acoes-arte .btn { flex-basis: 100%; } }
